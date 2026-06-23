@@ -21,7 +21,7 @@ https://www.theverge.com/rss/index.xml
 https://feeds.arstechnica.com/arstechnica/index
 https://www.espn.com/espn/rss/news
 https://www.latimes.com/local/rss2.0.xml
-https://chaski.huffpost.com/us/auto/vertical/front-page
+https://slate.com/feeds/all.rss
 https://time.com/feed/
 https://www.independent.co.uk/news/world/rss
 https://www.wired.com/feed/rss
