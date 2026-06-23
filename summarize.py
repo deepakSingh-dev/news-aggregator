@@ -62,12 +62,16 @@ def build_prompt(articles):
 
 {articles_block}
 
-Write a short, neutral summary (2-3 sentences) based only on the information above \
--- do not add facts that aren't in the articles. Then list the source links exactly \
-as given above, with no changes.
+Write a neutral summary based only on the information above -- do not add facts \
+that aren't in the articles. Include relevant background and context on why this \
+story matters, not just a bare recap of the headline. Format it as 4-5 short \
+paragraphs (1-2 sentences each), separated by a blank line, like a typical news \
+article -- not one big block of text. Then list the source links exactly as \
+given above, with no changes.
 
-Respond with ONLY valid JSON, no other text, in this exact shape:
-{{"summary": "...", "links": ["...", "..."]}}"""
+Respond with ONLY valid JSON, no other text, in this exact shape (use \\n\\n \
+inside the summary string to separate paragraphs):
+{{"summary": "paragraph one.\\n\\nparagraph two.\\n\\n...", "links": ["...", "..."]}}"""
 
 
 def parse_response(text):
@@ -82,7 +86,7 @@ def parse_response(text):
 
 def summarize_cluster(client, cluster_id, articles):
     prompt = build_prompt(articles)
-    max_tokens = min(4096, 600 + 80 * len(articles))
+    max_tokens = min(4096, 900 + 80 * len(articles))
     response = client.messages.create(
         model=MODEL,
         max_tokens=max_tokens,
@@ -101,7 +105,10 @@ def summarize_cluster(client, cluster_id, articles):
 
 def save_story(conn, cluster_id, summary, links):
     conn.execute(
-        "INSERT OR REPLACE INTO daily_stories (cluster_id, summary, links) VALUES (?, ?, ?)",
+        """
+        INSERT INTO daily_stories (cluster_id, summary, links) VALUES (?, ?, ?)
+        ON CONFLICT(cluster_id) DO UPDATE SET summary=excluded.summary, links=excluded.links
+        """,
         (cluster_id, summary, json.dumps(links)),
     )
 
