@@ -3,6 +3,7 @@ import sys
 
 import cartoon
 import cluster
+import ingest
 import publish
 import rank
 import summarize
@@ -11,6 +12,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger("main")
 
 STEPS = [
+    ("ingest", ingest.main),
     ("cluster", cluster.main),
     ("summarize", summarize.main),
     ("rank", rank.main),
