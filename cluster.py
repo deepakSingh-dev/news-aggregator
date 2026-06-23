@@ -85,6 +85,12 @@ def save_clusters(conn, clusters, articles):
             article_id INTEGER
         )
     """)
+    # cluster_id is reassigned from scratch every run, so any daily_stories row from a
+    # previous run (including its wp_post_id) no longer corresponds to the same story --
+    # keeping it around risks a future run silently overwriting an unrelated live WP post
+    # that happens to land on the same cluster_id number.
+    conn.execute("DROP TABLE IF EXISTS daily_stories")
+    conn.commit()
     rows = [
         (cluster_id, articles[idx][0])
         for cluster_id, idxs in enumerate(clusters)

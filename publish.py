@@ -20,6 +20,8 @@ ALLOWED_CATEGORY_SLUGS = {
     "politics-society", "sports", "technology-science", "world", "uncategorized",
 }
 
+DRY_RUN = os.environ.get("PUBLISH_DRY_RUN", "").lower() in ("1", "true", "yes")
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("publish")
 
@@ -163,11 +165,20 @@ def publish_story(conn, client, categories, cluster_id, status="publish"):
         "SELECT wp_post_id FROM daily_stories WHERE cluster_id=?", (cluster_id,)
     ).fetchone()[0]
 
+    category_id = pick_category(client, categories, title, summary)
+    content = build_content_html(summary, links)
+
+    if DRY_RUN:
+        logger.info(
+            "[DRY RUN] Cluster %d ready to publish -- title=%r category_id=%s image=%s "
+            "existing_post_id=%s content_chars=%d (no WP write performed)",
+            cluster_id, title, category_id, image_path, existing_post_id, len(content),
+        )
+        return None
+
     media_id = upload_media(image_path)
     logger.info("Cluster %d: uploaded media id %d", cluster_id, media_id)
 
-    category_id = pick_category(client, categories, title, summary)
-    content = build_content_html(summary, links)
     post = create_post(title, content, category_id, media_id, status, existing_post_id)
 
     conn.execute(
@@ -184,6 +195,11 @@ def publish_story(conn, client, categories, cluster_id, status="publish"):
 def main():
     load_env()
     client = Anthropic()
+
+    if DRY_RUN:
+        logger.info("DRY RUN: no media will be uploaded, no posts will be created/updated")
+        me = wp_request("/users/me")
+        logger.info("WP auth check OK -- logged in as %r (id=%s)", me.get("name"), me.get("id"))
 
     conn = sqlite3.connect(DB_FILE)
     ensure_wp_columns(conn)
