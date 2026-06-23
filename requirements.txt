@@ -1,0 +1,5 @@
+feedparser>=6.0
+python-dateutil>=2.9
+sentence-transformers>=5.6
+numpy>=2.5
+anthropic>=0.111
