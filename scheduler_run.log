@@ -1,0 +1,8 @@
+2026-06-22 22:26:02,604 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-06-22 22:26:02,604 [INFO] Added job "scheduled_ingestion" to job store "default"
+2026-06-22 22:26:02,604 [INFO] Scheduler started
+2026-06-22 22:26:02,604 [INFO] Scheduler started, running every 30 minutes
+2026-06-22 22:26:02,604 [INFO] Running job "scheduled_ingestion (trigger: interval[0:30:00], next run at: 2026-06-22 22:56:02 EDT)" (scheduled at 2026-06-22 22:26:02.603603-04:00)
+2026-06-22 22:26:02,604 [INFO] Ingestion run starting
+2026-06-22 22:26:18,186 [INFO] Ingestion run finished: inserted=0 duplicates=1180 total_rows=1176
+2026-06-22 22:26:18,186 [INFO] Job "scheduled_ingestion (trigger: interval[0:30:00], next run at: 2026-06-22 22:56:02 EDT)" executed successfully

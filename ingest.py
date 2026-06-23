@@ -25,7 +25,7 @@ def init_db(conn):
     conn.commit()
 
 
-def main():
+def run_ingestion():
     conn = sqlite3.connect(DB_FILE)
     init_db(conn)
 
@@ -55,10 +55,11 @@ def main():
     conn.commit()
 
     total = conn.execute("SELECT COUNT(*) FROM articles").fetchone()[0]
-    print(f"Inserted: {inserted}  Duplicates skipped: {duplicates}  Total rows in db: {total}")
-
     conn.close()
+
+    return inserted, duplicates, total
 
 
 if __name__ == "__main__":
-    main()
+    inserted, duplicates, total = run_ingestion()
+    print(f"Inserted: {inserted}  Duplicates skipped: {duplicates}  Total rows in db: {total}")
